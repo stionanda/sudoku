@@ -1,1 +1,47 @@
 Summarise your findings here (see specification).
+
+
+The goal is to find the difficulty level for Sudoku mystery boards.
+
+Solving user time is an indicator for the solving algorithm duration, hence the higher user time means higher difficulty.
+
+Running following command:
+time ./tester filename
+
+easy.dat = 0.00s
+medium.dat = 0.01s
+mystery1.dat = 0.29s
+mystery2.dat = -
+mystery3.dat = 0.01s
+
+Following on mystery2, output from the sudoku executable file is:
+
+"
+
+Loading Sudoku board from file 'mystery2.dat'... Success!
+A solution cannot be found.
+
+"
+
+The algorithm cannot solve the particular board 'mystery2.dat'. As the algorithm is exhaustive, the more likely explanation is that board 'mystery2.dat' is unsolvable.
+
+User time to solve 'mystery1.dat' > 'mystery3.dat', so board 'mystery1.dat' is the "extremely hard" difficulty level while 'mystery3.dat' board is the "hard" difficulty level.
+
+Notice that boards 'medium.dat' and 'mystery3.dat' is close, so I investigated the number of function calls for solve_board and received output for each file:
+
+easy.dat = 2949
+medium.dat = 20316
+mystery1.dat = 558780
+mystery2.dat = -
+mystery3.dat = 21540
+
+The results reiterates previous findings, and confirmed that 'mystery3.dat' board, which is "hard" in difficulty takes longer to solve than 'medium.dat" even though by a not very significant margin. This might indicate that both boards are close to the the medium-high level boundary.
+
+
+Conclusion:
+
+mystery1.dat = "extremely hard" difficulty
+mystery2.dat = impossible to solve
+mystery3.dat = "hard" difficulty
+
+

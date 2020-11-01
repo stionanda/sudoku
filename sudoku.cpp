@@ -77,6 +77,7 @@ void display_board(const char board[9][9]) {
 bool is_complete(char board[9][9]) {
   for (int i=0; i<9; i++) {
     for (int j=0; j<9; j++) {
+      // Definition of complete is that each cell is filled with char between '1' and '9' inclusive
       if (board[i][j] < '1' || board[i][j] > '9') return false;
     }
   }
@@ -84,15 +85,21 @@ bool is_complete(char board[9][9]) {
 }
 
 bool make_move(string position, char digit, char board[9][9]) {
+  // Conversion of char to integer
   int r = position[0] - 'A', c = position[1] - '1';
+  
+  // Row and column boundary checking (0..8)
   if (r < 0 || r >= 9 || c < 0 || c >=9) return false;
   
   if (board[r][c] == digit) return true;
-
+  
+  // Part of sudoku rule, if row or column contains relevant number, return false
   for (int i=0; i<9; i++) {
     if (board[r][i] == digit || board[i][c] == digit) return false;
   }
-
+  
+  // Part of sudoku rule, if 3x3 box contains relevant number, return false
+  // [nr,nc] is top-left of the relevant box
   int nr = r / 3 * 3, nc = c / 3 * 3;
 
   for (int j=nr; j< nr + 3; j++) { 
@@ -109,7 +116,7 @@ bool make_move(string position, char digit, char board[9][9]) {
 bool save_board(const char* filename, char board[9][9]) {
   ofstream out(filename);
   if(!out) return false;
-
+  
   for (int i=0; i<9; i++) {
     for (int j=0; j<9; j++){
       out << board[i][j];
@@ -119,23 +126,36 @@ bool save_board(const char* filename, char board[9][9]) {
   return true;
 }
 
+// Returns true iff. given the board state, it's possible to fill [r, c], [r ,c + 1], ... [r, 8], [r + 1, 0], ..., [8, 8] with valid moves
+// Then solve_board amends '.' to number
 bool solve_board(int r, int c, char board[9][9]) {
   
+  // Function call iteration count
   count_global++;
-
+  
   if (r == 9) return true;
+  
+  // Next cell 
   int nr = c == 8 ? r + 1: r;
   int nc = (c+1)%9;
 
+  // Format integers r and c into string position
   string s;
   s.push_back(r + 'A');
   s.push_back(c + '1');
 
   if (board[r][c]!='.') return solve_board(nr,nc,board);
   
+  // Try all possible moves on this board (1..9), recursively solve board from next cell
   for (int i=1; i<=9; i++) {
-    if (make_move(s,i+'0',board) && solve_board(nr,nc,board)) return true;
+    if (make_move(s,i+'0',board)) {
+      if (solve_board(nr,nc,board)) {
+        return true;
+      }
+    }
   }
+
+  // Function solve_board isn't supposed to put number if no solvable boards is found
   board[r][c] = '.';
   return false;
 }
